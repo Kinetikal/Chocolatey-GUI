@@ -45,19 +45,26 @@ def install_useradded_package(add_own_package):
 sg.theme("SystemDefault")
 font=("Arial", 16)
 
-layout = [[sg.Text("Windows Package Manager", font="Arial 20 bold underline")],
+layout_description = [[sg.Text("Windows Package Manager", font="Arial 20 bold underline")],
           [sg.Text()],
           [sg.Text("A WPM with a GUI that uses the Windows Subprocess for executing commands in the Terminal/Command Prompt.")],
           [sg.Text("Built using Python. This Program uses"),sg.Text("Chocolatey",font="Arial 14 underline",text_color="#42b3f5",enable_events=True,tooltip="Redirect Link to Chocolatey's Website.", key="-URL_REDIRECT-"),sg.Text("a solid WPM which executes commands and installs Software.")],
           [sg.Text()],
           [sg.Text("If you don't have Chocolatey, please install it with the 'Install Chocolatey' button.")],
-          [sg.Text("You can install a Predefined Package with the 'Install Packages' but it's probably not for your taste.")],
-          [sg.Text("Lastly you can go to"),sg.Text("Chocolatey Packages",font="Arial 14 underline",text_color="#42b3f5",enable_events=True,tooltip="Redirect Link to Chocolatey's Package Page.", key="-URL_REDIRECT_PACKAGES-"),sg.Text("and bundle your own Packages and add the as .txt to this Program.")],
+          [sg.Text("You can install a Predefined Package with the 'Install Packages' but it's not reccommended.")],
+          [sg.Text("Lastly you can go to"),sg.Text("Chocolatey Packages",font="Arial 14 underline",text_color="#42b3f5",enable_events=True,tooltip="Redirect Link to Chocolatey's Package Page.", key="-URL_REDIRECT_PACKAGES-"),sg.Text("and bundle your own Packages and add it as a .txt File to this Program.")]]
+
+layout_buttons = [[sg.Text("Install Chocolatey via PowerShell        "),sg.Button("Install Chocolatey")],
+                  [sg.Text("Install Predefined Chocolatey Packages"),sg.Button("Install Packages")]]
+
+layout_addown_n_output = [[sg.Text("Add own package File:"),sg.Input(key="-CONF_INPUT-"),sg.FileBrowse(file_types=(("Text Files", "*.txt"),)),sg.Button("Add"),sg.Button("Install")],
+                          [sg.Multiline(size=(90,10),key="-OUTPUT-")]]
+
+layout = [[sg.Column(layout_description)],
           [sg.Text()],
-          [sg.Text("Install Chocolatey via PowerShell        "),sg.Button("Install Chocolatey")],
-          [sg.Text("Install Predefined Chocolatey Packages"),sg.Button("Install Packages")],
-          [sg.Text("Add own package File:"),sg.Input(key="-CONF_INPUT-"),sg.FileBrowse(file_types=(("Text Files", "*.txt"),)),sg.Button("Add"),sg.Button("Install")],
-          [sg.Multiline(size=(90,10),key="-OUTPUT-")]]
+          [sg.Column(layout_buttons)],
+          [sg.Text()],
+          [sg.Column(layout_addown_n_output)]]
 
 window = sg.Window("Chocolatey Package Manager",layout,font=font, finalize=True)
 
