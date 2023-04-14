@@ -1,8 +1,17 @@
 # Chocolatey-GUI
 The Chocolatey Windows Package Manager, built as a GUI with Python's PySimpleGUI Module.
 
+
+## Usage
+
+This program is fairly simple. It reads events and stores them in Variables which get executed in Functions.
+These functions open a subprocces in PowerShell and run the commands in the PowerShell window, just as you would manually type stuff in there.
+This makes the proccess quicker and somewhat automated.
+
 There is a predefined package that I use but it can be skipped/deleted.
 Also there is an Option to add your own Package as a .txt File and install that.
+
+Python will read the .txt file and save it's content which would look like this ``` choco install firefox --version 111.0.1 -y ``` which will install Firefox with Chocolatey.
 
 
 ## Code
@@ -116,6 +125,17 @@ while True:
         
 window.close()
 
+```
+
+## Setting your own Predefine Package
+
+If you don't want to read a Package from a .txt File, you can change the code Lines to your own Predefined Package and with a press of a button run it.
+
+Code to change:
+```python
+def predefined_choco_packages():
+    chocolatey_packages = """ Enter the Package Build Content Here """
+    # Docstring as String Variable is used isntead of make multiple Variables where each would start with choco install APPNAME 
 ```
 
 ## Screenshots
