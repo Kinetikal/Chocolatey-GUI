@@ -76,13 +76,17 @@ def read_package_content(add_own_package):
     try:
         add_own_package = Path(add_own_package).read_text()
         window["-OUTPUT-"].print(f">>> Your Package contains:\n{add_own_package}")
-    except PermissionError:
-        window["-OUTPUT-"].print(">>> PermissionError: File not found!")
+    except FileNotFoundError:
+        window["-OUTPUT-"].print(">>> FileNotFoundError: No file found, check Input.")
 
 def install_useradded_package(add_own_package):
-    content = Path(add_own_package).read_text()
-    result = subprocess.run(["powershell.exe", content], shell=True, capture_output=True, text=True)
-    window["-OUTPUT-"].print(result.stdout)
+    try:
+        add_own_package = Path(add_own_package).read_text()
+        result = subprocess.run(["powershell.exe", add_own_package], shell=True, capture_output=True, text=True)
+        window["-OUTPUT-"].print(result.stdout)
+    except FileNotFoundError:
+        window["-OUTPUT-"].print(">>> FileNotFoundError: No file found, check Input.")
+    
 
 sg.theme("DarkGrey13")
 font=("Arial", 16)
@@ -165,6 +169,7 @@ while True:
         sg.popup_scrolled(sg.get_versions())
             
 window.close()
+
 ```
 
 ## Setting your own Predefine Package
