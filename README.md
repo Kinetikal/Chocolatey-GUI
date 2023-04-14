@@ -20,14 +20,7 @@ import PySimpleGUI as sg
 import subprocess, sys, webbrowser, os
 from pathlib import Path
 
-# Install proccess for Chocolatey, in case you don't have it. #
-def install_choco():
-    subprocess.run(["powershell.exe", "Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))"])
-
-# My personal predefined Software Package that I use on a Fresh Windows Install. #
-# You can Delete the code from here til... #
-def predefined_choco_packages():
-    chocolatey_packages = """choco install firefox --version 111.0.1 -y
+user_defined_choco_packages = """choco install firefox --version 111.0.1 -y
 choco install vcredist140 --version 14.34.31938 -y
 choco install python3 --version 3.11.3 -y
 choco install 7zip.install --version 22.1 -y
@@ -47,8 +40,31 @@ choco install ubisoft-connect --version 140.0.0.10857 -y
 choco install notepadplusplus --version 8.5.2 -y
 choco install msiafterburner --version 4.6.5.230316 -y"""
 
-    subprocess.run(["powershell.exe", chocolatey_packages])
-# ...till here, this function can be deleted if you don't want the predefined package.  #
+# Custom theme inputs, changed by desire.
+my_new_theme = {'BACKGROUND': '#401955',
+                'TEXT': 'white',
+                'INPUT': '#deb887',
+                'TEXT_INPUT': '#000000',
+                'SCROLL': '#c7e78b',
+                'BUTTON': ('white', '#7541ba'),
+                'PROGRESS': ('#01826B', '#D0D0D0'),
+                'BORDER': 1,
+                'SLIDER_DEPTH': 0,
+                'PROGRESS_DEPTH': 0}
+
+# Add your dictionary to the PySimpleGUI themes.
+sg.theme_add_new('MyNewTheme', my_new_theme)
+
+# Install proccess for Chocolatey, in case you don't have it. #
+def install_choco():
+    result = subprocess.run(["powershell.exe", "Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))"], shell=True, capture_output=True, text=True)
+    window["-OUTPUT-"].print(result.stdout)
+    
+# My personal predefined Software Package that I use on a Fresh Windows Install. #
+def predefined_choco_packages():
+
+    subprocess.run(["powershell.exe", user_defined_choco_packages])
+
     
 # Option to add your own Software Package as a .txt file which will be read and executed. #
 def read_package_content(add_own_package):
@@ -60,38 +76,48 @@ def read_package_content(add_own_package):
 
 def install_useradded_package(add_own_package):
     content = Path(add_own_package).read_text()
-    subprocess.run(["powershell.exe", content])
+    result = subprocess.run(["powershell.exe", content], shell=True, capture_output=True, text=True)
+    window["-OUTPUT-"].print(result.stdout)
 
-sg.theme("SystemDefault")
+sg.theme("DarkGrey13")
 font=("Arial", 16)
 
-layout_description = [[sg.Text("Windows Package Manager", font="Arial 20 bold underline")],
+MENU_RIGHT_CLICK = ["",["Clear Output", "Version", "Exit"]]
+
+layout_description = [[sg.Text("Chocolatey-GUI", font="Arial 20 bold underline")],
           [sg.Text()],
-          [sg.Text("A WPM with a GUI that uses the Windows Subprocess for executing commands in the Terminal/Command Prompt.")],
-          [sg.Text("Built using Python. This Program uses"),sg.Text("Chocolatey",font="Arial 14 underline",text_color="#42b3f5",enable_events=True,tooltip="Redirect Link to Chocolatey's Website.", key="-URL_REDIRECT-"),sg.Text("a solid WPM which executes commands and installs Software.")],
+          [sg.Text("A WPM with a GUI that uses the Windows Subprocess for executing commands in the PowerShell/Command Prompt.")],
+          [sg.Text("This Program uses"),sg.Text("Chocolatey",font="Arial 14 underline",text_color="#42b3f5",enable_events=True,tooltip="Redirect Link to Chocolatey's Website.", key="-URL_REDIRECT-"),sg.Text("a solid WPM which executes commands and installs Software.")],
+          [sg.Text("Built using Python and the PySimpleGUI Module.")],
           [sg.Text()],
           [sg.Text("If you don't have Chocolatey, please install it with the 'Install Chocolatey' button.")],
-          [sg.Text("You can install a Predefined Package with the 'Install Packages' but it's not reccommended.")],
+          [sg.Text("You can install a Predefined Package with the 'Install Packages' button.")],
           [sg.Text("Lastly you can go to"),sg.Text("Chocolatey Packages",font="Arial 14 underline",text_color="#42b3f5",enable_events=True,tooltip="Redirect Link to Chocolatey's Package Page.", key="-URL_REDIRECT_PACKAGES-"),sg.Text("and bundle your own Packages and add it as a .txt File to this Program.")]]
 
-layout_buttons = [[sg.Text("Install Chocolatey via PowerShell        "),sg.Button("Install Chocolatey")],
-                  [sg.Text("Install Predefined Chocolatey Packages"),sg.Button("Install Packages")]] # DELETE THIS IF YOU REMOVED THE PREDEFINED PACKAGES FUNCTION ABOVE #
+layout_buttons = [[sg.Text()],
+                  [sg.Text("If you want to list the predefined Packages",font="Arial 16 bold"),sg.Push(),sg.Button("List Packages",size=(15,1))],
+                  [sg.Text("Install Chocolatey with Windows PowerShell",font="Arial 16 bold"),sg.Push(),sg.Button("Install Chocolatey",size=(15,1))],
+                  [sg.Text("Install Predefined Chocolatey Packages",font="Arial 16 bold"),sg.Push(),sg.Button("Install Packages",size=(15,1))]]
 
-layout_addown_n_output = [[sg.Text("Add own package File:"),sg.Input(key="-CONF_INPUT-"),sg.FileBrowse(file_types=(("Text Files", "*.txt"),)),sg.Button("Add"),sg.Button("Install")],
+layout_addown_n_output = [[sg.Text("Add own package File:"),sg.Input(key="-CONF_INPUT-",default_text="Search for a .txt File"),sg.FileBrowse(file_types=(("Text Files", "*.txt"),)),sg.Button("Add"),sg.Button("Install")],
+                          [sg.HSeparator()],
                           [sg.Multiline(size=(90,10),key="-OUTPUT-")]]
 
+frame_layout_end = [[sg.Text("Credit: Jovan", font= "Arial 10 bold underline"),sg.Button("Exit",size=(10,1),tooltip="Exit the Program.", expand_x=True)]]
+
 layout = [[sg.Column(layout_description)],
-          [sg.Text()],
+          [sg.HSeparator()],
           [sg.Column(layout_buttons)],
           [sg.Text()],
-          [sg.Column(layout_addown_n_output)]]
+          [sg.Column(layout_addown_n_output)],
+          [sg.Column(frame_layout_end, justification="right")]]
 
-window = sg.Window("Chocolatey Package Manager",layout,font=font, finalize=True)
+window = sg.Window("Chocolatey Package Manager",layout,font=font, finalize=True,right_click_menu=MENU_RIGHT_CLICK)
 
 while True:
     event, values = window.read()
     
-    if event == sg.WIN_CLOSED:
+    if event == sg.WIN_CLOSED or event == "Exit":
         break
     # Variable #
     add_own_package = values["-CONF_INPUT-"]
@@ -108,8 +134,11 @@ while True:
     elif event == "Install Chocolatey":
         window.perform_long_operation(install_choco,"-OUTPUT-")
         
-    elif event == "Install Packages": # DELETE THIS IF YOU REMOVED THE PREDEFINED PACKAGES FUNCTION ABOVE #
-        window.perform_long_operation(predefined_choco_packages,"-OUTPUT-") # DELETE THIS IF YOU REMOVED THE PREDEFINED PACKAGES FUNCTION ABOVE #
+    elif event == "Install Packages":
+        window.perform_long_operation(predefined_choco_packages,"-OUTPUT-")
+    
+    elif event == "List Packages":
+        window["-OUTPUT-"].print(user_defined_choco_packages)
         
     elif event == "Add" and len(values["-CONF_INPUT-"]) > 0:
         window.perform_long_operation(lambda: read_package_content(add_own_package),"-OUTPUT-")
@@ -123,8 +152,14 @@ while True:
     elif event == "Install" and len(values["-CONF_INPUT-"]) == 0:
         window["-OUTPUT-"].print(">>> Error: No file found, check Input.")
         
+    elif event == "Clear Output":
+        window["-OUTPUT-"].update("")
+        #sg.execute_editor(__file__)
+        
+    elif event == "Version":
+        sg.popup_scrolled(sg.get_versions())
+            
 window.close()
-
 ```
 
 ## Setting your own Predefine Package
