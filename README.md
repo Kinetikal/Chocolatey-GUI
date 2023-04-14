@@ -13,7 +13,7 @@ Also there is an Option to add your own Package as a .txt File and install that.
 
 Python will read the .txt file and save it's content which would look like this ``` choco install firefox --version 111.0.1 -y ``` which will install Firefox with Chocolatey.
 
-## Use the .exe to run it as Program
+## Use the .exe to run it as a Program
 
 I converted the Script into a .exe File in the ```Chocolatey_GUI``` folder.
 Download the whole Folder and save it to anywhere you like. Open the Chocolatey_GUI.exe and start using the Program as normal.
