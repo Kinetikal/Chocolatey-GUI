@@ -135,7 +135,7 @@ Code to change:
 ```python
 def predefined_choco_packages():
     chocolatey_packages = """ Enter the Package Build Content Here """
-    # Docstring as String Variable is used isntead of make multiple Variables where each would start with choco install APPNAME 
+    # Docstring as String Variable is used isntead of making multiple Variables where each would start with choco install APPNAME 
 ```
 
 ## Screenshots
