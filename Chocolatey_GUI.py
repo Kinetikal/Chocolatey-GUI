@@ -4,8 +4,9 @@ from pathlib import Path
 
 # Install proccess for Chocolatey, in case you don't have it. #
 def install_choco():
-    subprocess.run(["powershell.exe", "Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))"])
-
+    result = subprocess.run(["powershell.exe", "Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))"], shell=True, capture_output=True, text=True)
+    window["-OUTPUT-"].print(result.stdout)
+    
 # My personal predefined Software Package that I use on a Fresh Windows Install. #
 def predefined_choco_packages():
     chocolatey_packages = """choco install firefox --version 111.0.1 -y
@@ -28,8 +29,8 @@ choco install ubisoft-connect --version 140.0.0.10857 -y
 choco install notepadplusplus --version 8.5.2 -y
 choco install msiafterburner --version 4.6.5.230316 -y"""
 
-    subprocess.run(["powershell.exe", chocolatey_packages])
-    
+    result = subprocess.run(["powershell.exe", chocolatey_packages], shell=True, capture_output=True, text=True)
+    window["-OUTPUT-"].print(result.stdout)
 # Option to add your own Software Package as a .txt file which will be read and executed. #
 def read_package_content(add_own_package):
     try:
@@ -40,7 +41,8 @@ def read_package_content(add_own_package):
 
 def install_useradded_package(add_own_package):
     content = Path(add_own_package).read_text()
-    subprocess.run(["powershell.exe", content])
+    result = subprocess.run(["powershell.exe", content], shell=True, capture_output=True, text=True)
+    window["-OUTPUT-"].print(result.stdout)
 
 sg.theme("SystemDefault")
 font=("Arial", 16)
