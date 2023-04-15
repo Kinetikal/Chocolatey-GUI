@@ -22,21 +22,6 @@ user_defined_choco_packages = ["choco install firefox --version 111.0.1 -y",
 "choco install notepadplusplus --version 8.5.2 -y",
 "choco install msiafterburner --version 4.6.5.230316 -y"]
 
-# Custom theme inputs, changed by desire.
-my_new_theme = {'BACKGROUND': '#401955',
-                'TEXT': 'white',
-                'INPUT': '#deb887',
-                'TEXT_INPUT': '#000000',
-                'SCROLL': '#c7e78b',
-                'BUTTON': ('white', '#7541ba'),
-                'PROGRESS': ('#01826B', '#D0D0D0'),
-                'BORDER': 1,
-                'SLIDER_DEPTH': 0,
-                'PROGRESS_DEPTH': 0}
-
-# Add your dictionary to the PySimpleGUI themes.
-sg.theme_add_new('MyNewTheme', my_new_theme)
-
 # Install proccess for Chocolatey, in case you don't have it. #
 def install_choco():
     result = subprocess.run(["powershell.exe", "Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))"], shell=True, capture_output=True, text=True)
@@ -97,11 +82,11 @@ layout_buttons = [[sg.Text()],
                   [sg.Text("Install Chocolatey with Windows PowerShell",font="Arial 16 bold"),sg.Push(),sg.Button("Install Chocolatey",size=(15,1))],
                   [sg.Text("Install Predefined Chocolatey Packages",font="Arial 16 bold"),sg.Push(),sg.Button("Install Packages",size=(15,1))]]
 
-layout_addown_n_output = [[sg.Text("Add own package File:"),sg.Input(key="-CONF_INPUT-",default_text="Search for a .txt File"),sg.FileBrowse(file_types=(("Configuration File", "*.config"),("Text File", "*.txt"),)),sg.Button("Add"),sg.Button("Install")],
+layout_addown_n_output = [[sg.Text("Add own package File:"),sg.Input(key="-CONF_INPUT-",default_text="Search for a .txt File"),sg.FileBrowse(file_types=(("Text File", "*.txt"))),sg.Button("Add", tooltip="Adds and prints the file content into the Output."),sg.Button("Install",tooltip="Starts intalling the Package as a PowerShell script. BE CAREFUL!")],
                           [sg.HSeparator()],
                           [sg.Multiline(size=(90,10),key="-OUTPUT-")]]
 
-frame_layout_end = [[sg.Text("Credit: Jovan", font= "Arial 10 bold underline"),sg.Button("Exit",size=(10,1),tooltip="Exit the Program.", expand_x=True)]]
+frame_layout_end = [[sg.Button("Exit",size=(10,1),tooltip="Exit the Program.", expand_x=True)]]
 
 layout = [[sg.Column(layout_description)],
           [sg.HSeparator()],
@@ -145,6 +130,7 @@ while True:
         window["-OUTPUT-"].print(">>> Error: No file found, check Input.")
         
     elif event == "Install" and len(values["-CONF_INPUT-"]) > 0:
+        window["-OUTPUT-"].print(">>> Installing Package from Input...")
         window.perform_long_operation(lambda: install_useradded_package(add_own_package),"-OUTPUT-")
         
     elif event == "Install" and len(values["-CONF_INPUT-"]) == 0:
