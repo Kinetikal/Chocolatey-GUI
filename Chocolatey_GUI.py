@@ -2,25 +2,25 @@ import PySimpleGUI as sg
 import subprocess, sys, webbrowser, os
 from pathlib import Path
 
-user_defined_choco_packages = """choco install firefox --version 111.0.1 -y
-choco install vcredist140 --version 14.34.31938 -y
-choco install python3 --version 3.11.3 -y
-choco install 7zip.install --version 22.1 -y
-choco install vlc --version 3.0.18 -y
-choco install git.install --version 2.40.0 -y
-choco install vscode --version 1.77.3 -y
-choco install treesizefree --version 4.6.3 -y
-choco install amd-ryzen-chipset --version 2023.2.28 -y
-choco install nvidia-display-driver --version 531.41 -y
-choco install sharex --version 15.0.0 -y
-choco install discord --version 1.0.9005 -y
-choco install handbrake --version 1.6.1 -y
-choco install steam --version 2.10.91.91221129 -y
-choco install epicgameslauncher --version 1.3.51.0 -y
-choco install ea-app --version 12.158.0.5415 -y
-choco install ubisoft-connect --version 140.0.0.10857 -y
-choco install notepadplusplus --version 8.5.2 -y
-choco install msiafterburner --version 4.6.5.230316 -y"""
+user_defined_choco_packages = ["choco install firefox --version 111.0.1 -y",
+"choco install vcredist140 --version 14.34.31938 -y",
+"choco install python3 --version 3.11.3 -y",
+"choco install 7zip.install --version 22.1 -y",
+"choco install vlc --version 3.0.18 -y",
+"choco install git.install --version 2.40.0 -y",
+"choco install vscode --version 1.77.3 -y",
+"choco install treesizefree --version 4.6.3 -y",
+"choco install amd-ryzen-chipset --version 2023.2.28 -y",
+"choco install nvidia-display-driver --version 531.41 -y",
+"choco install sharex --version 15.0.0 -y",
+"choco install discord --version 1.0.9005 -y",
+"choco install handbrake --version 1.6.1 -y",
+"choco install steam --version 2.10.91.91221129 -y",
+"choco install epicgameslauncher --version 1.3.51.0 -y",
+"choco install ea-app --version 12.158.0.5415 -y",
+"choco install ubisoft-connect --version 140.0.0.10857 -y",
+"choco install notepadplusplus --version 8.5.2 -y",
+"choco install msiafterburner --version 4.6.5.230316 -y"]
 
 # Custom theme inputs, changed by desire.
 my_new_theme = {'BACKGROUND': '#401955',
@@ -43,27 +43,39 @@ def install_choco():
     window["-OUTPUT-"].print(result.stdout)
     
 # My personal predefined Software Package that I use on a Fresh Windows Install. #
-def predefined_choco_packages():
+def predefined_choco_packages(list):
+    count = 0
+    for element in list:
+        count += 1
+        print(f"Running Script: {count}/{len(list)}")
 
-    subprocess.run(["powershell.exe", user_defined_choco_packages])
-
+        subprocess.run(["powershell.exe", element])
+        window["-OUTPUT-"].print(subprocess.run(["powershell.exe", element]))
     
-# Option to add your own Software Package as a .txt file which will be read and executed. #
-def read_package_content(add_own_package):
+# Option to add your own Software Package as a .txt file which will be read and set as an Variable. #
+def read_package_content(file_to_read):
     try:
-        add_own_package = Path(add_own_package).read_text()
-        window["-OUTPUT-"].print(f">>> Your Package contains:\n{add_own_package}")
+        file_to_read = Path(file_to_read).read_text()
+        window["-OUTPUT-"].print(f">>> Your Package contains:\n{file_to_read}")
     except FileNotFoundError:
         window["-OUTPUT-"].print(">>> FileNotFoundError: No file found, check Input.")
 
-def install_useradded_package(add_own_package):
+# Reads the .txt file that is found in the Input Field and executes every single LINE one by one and returns a returncode 1 = ERROR and returncode 0 = SUCCESSFULL
+def install_useradded_package(install_own_package):
     try:
-        add_own_package = Path(add_own_package).read_text()
-        result = subprocess.run(["powershell.exe", add_own_package], shell=True, capture_output=True, text=True)
-        window["-OUTPUT-"].print(result.stdout)
+        with open(install_own_package) as file:
+            lines = [line.rstrip() for line in file]
+            
+        count = 0
+        for element in lines:
+            count += 1
+            print(f"Running Script: {count}/{len(lines)}")
+
+            subprocess.run(["powershell.exe", element])
+            window["-OUTPUT-"].print(subprocess.run(["powershell.exe", element]))
+        
     except FileNotFoundError:
         window["-OUTPUT-"].print(">>> FileNotFoundError: No file found, check Input.")
-    
 
 sg.theme("DarkGrey13")
 font=("Arial", 16)
@@ -85,7 +97,7 @@ layout_buttons = [[sg.Text()],
                   [sg.Text("Install Chocolatey with Windows PowerShell",font="Arial 16 bold"),sg.Push(),sg.Button("Install Chocolatey",size=(15,1))],
                   [sg.Text("Install Predefined Chocolatey Packages",font="Arial 16 bold"),sg.Push(),sg.Button("Install Packages",size=(15,1))]]
 
-layout_addown_n_output = [[sg.Text("Add own package File:"),sg.Input(key="-CONF_INPUT-",default_text="Search for a .txt File"),sg.FileBrowse(file_types=(("Text Files", "*.txt"),)),sg.Button("Add"),sg.Button("Install")],
+layout_addown_n_output = [[sg.Text("Add own package File:"),sg.Input(key="-CONF_INPUT-",default_text="Search for a .txt File"),sg.FileBrowse(file_types=(("Configuration File", "*.config"),("Text File", "*.txt"),)),sg.Button("Add"),sg.Button("Install")],
                           [sg.HSeparator()],
                           [sg.Multiline(size=(90,10),key="-OUTPUT-")]]
 
@@ -121,7 +133,7 @@ while True:
         window.perform_long_operation(install_choco,"-OUTPUT-")
         
     elif event == "Install Packages":
-        window.perform_long_operation(predefined_choco_packages,"-OUTPUT-")
+        window.perform_long_operation(predefined_choco_packages(user_defined_choco_packages),"-OUTPUT-")
     
     elif event == "List Packages":
         window["-OUTPUT-"].print(user_defined_choco_packages)
