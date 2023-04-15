@@ -82,7 +82,7 @@ layout_buttons = [[sg.Text()],
                   [sg.Text("Install Chocolatey with Windows PowerShell",font="Arial 16 bold"),sg.Push(),sg.Button("Install Chocolatey",size=(15,1))],
                   [sg.Text("Install Predefined Chocolatey Packages",font="Arial 16 bold"),sg.Push(),sg.Button("Install Packages",size=(15,1))]]
 
-layout_addown_n_output = [[sg.Text("Add own package File:"),sg.Input(key="-CONF_INPUT-",default_text="Search for a .txt File"),sg.FileBrowse(file_types=(("Text File", "*.txt"))),sg.Button("Add", tooltip="Adds and prints the file content into the Output."),sg.Button("Install",tooltip="Starts intalling the Package as a PowerShell script. BE CAREFUL!")],
+layout_addown_n_output = [[sg.Text("Add own package File:"),sg.Input(key="-CONF_INPUT-",default_text="Search for a .txt File"),sg.FileBrowse(file_types=(("Text File", "*.txt"),)),sg.Button("Add", tooltip="Adds and prints the file content into the Output."),sg.Button("Install",tooltip="Starts intalling the Package as a PowerShell script. BE CAREFUL!")],
                           [sg.HSeparator()],
                           [sg.Multiline(size=(90,10),key="-OUTPUT-")]]
 
@@ -125,20 +125,16 @@ while True:
         
     elif event == "Add" and len(values["-CONF_INPUT-"]) > 0:
         window.perform_long_operation(lambda: read_package_content(add_own_package),"-OUTPUT-")
- 
-    elif event == "Add" and len(values["-CONF_INPUT-"]) == 0:
-        window["-OUTPUT-"].print(">>> Error: No file found, check Input.")
         
-    elif event == "Install" and len(values["-CONF_INPUT-"]) > 0:
+    elif event == "Install" and len(values["-CONF_INPUT-"]) > 0 and "Search for a .txt File" not in values["-CONF_INPUT-"]:
         window["-OUTPUT-"].print(">>> Installing Package from Input...")
         window.perform_long_operation(lambda: install_useradded_package(add_own_package),"-OUTPUT-")
         
-    elif event == "Install" and len(values["-CONF_INPUT-"]) == 0:
-        window["-OUTPUT-"].print(">>> Error: No file found, check Input.")
+    elif event == "Install" and values["-CONF_INPUT-"] == "Search for a .txt File" or values["-CONF_INPUT-"] == "":
+        window["-OUTPUT-"].print(">>> FileNotFoundError: No file found, check Input.")
         
     elif event == "Clear Output":
         window["-OUTPUT-"].update("")
-        #sg.execute_editor(__file__)
         
     elif event == "Version":
         sg.popup_scrolled(sg.get_versions())
