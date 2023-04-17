@@ -21,6 +21,7 @@ Download the whole Folder and save it to anywhere you like. Open the Chocolatey_
 
 ## How the package .txt File should be formatted
 
+The .txt File which contains multiple packages should be formated like this:
 ```
 choco install python3 --version 3.11.3 -y
 choco install 7zip.install --version 22.1 -y
@@ -30,6 +31,7 @@ choco install vscode --version 1.77.3 -y
 choco install treesizefree --version 4.6.3 -y
 choco install handbrake --version 1.6.1 -y
 ```
+With new lines where the installer will iterate through the lines and execute the commands one by one.
 
 ## Setting your own Predefine Package
 
