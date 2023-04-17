@@ -121,7 +121,9 @@ while True:
         window.perform_long_operation(predefined_choco_packages(user_defined_choco_packages),"-OUTPUT-")
     
     elif event == "List Packages":
-        window["-OUTPUT-"].print(user_defined_choco_packages)
+        window["-OUTPUT-"].print(">>> The user defined Package contains: ")
+        for x in user_defined_choco_packages:
+            window["-OUTPUT-"].print(x)
         
     elif event == "Add" and len(values["-CONF_INPUT-"]) > 0:
         window.perform_long_operation(lambda: read_package_content(add_own_package),"-OUTPUT-")
