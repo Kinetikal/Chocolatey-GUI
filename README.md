@@ -45,6 +45,6 @@ def predefined_choco_packages():
 ```
 
 ## Screenshots
-![image](https://user-images.githubusercontent.com/93329694/232036476-ea8b13cb-b2f9-46be-91bd-e22c05c642fc.png)
+![GUI](https://user-images.githubusercontent.com/93329694/232774265-ab09ff57-daa0-4c8e-9f44-c7a326c8015e.png)
 
 
