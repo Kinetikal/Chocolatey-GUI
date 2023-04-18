@@ -50,7 +50,23 @@ def install_user_added_package(install_own_package):
     except FileNotFoundError:
         window["-OUTPUT-"].print(">>> FileNotFoundError: No file found, check Input.")
 
-sg.theme("DarkGrey13")
+# Add your new theme colors and settings
+my_new_theme = {'BACKGROUND': '#1c1e23',
+                'TEXT': '#d2d2d3',
+                'INPUT': '#3d3f46',
+                'TEXT_INPUT': '#d2d2d3',
+                'SCROLL': '#c7e78b',
+                'BUTTON': ('#6fb97e', '#313641'),
+                'PROGRESS': ('#385d3f', '#a9d5b2'),
+                'BORDER': 1,
+                'SLIDER_DEPTH': 0,
+                'PROGRESS_DEPTH': 0}
+
+# Add your dictionary to the PySimpleGUI themes
+sg.theme_add_new('MyGreen', my_new_theme)
+
+# Switch your theme to use the newly added one. You can add spaces to make it more readable
+sg.theme("MyGreen")
 font=("Arial", 16)
 
 MENU_RIGHT_CLICK = ["",["Clear Output", "Version", "Exit"]]
@@ -58,12 +74,12 @@ MENU_RIGHT_CLICK = ["",["Clear Output", "Version", "Exit"]]
 layout_description = [[sg.Text("Chocolatey-GUI", font="Arial 20 bold underline")],
           [sg.Text()],
           [sg.Text("A WPM with a GUI that uses the Windows Subprocess for executing commands in the PowerShell/Command Prompt.")],
-          [sg.Text("This Program uses"),sg.Text("Chocolatey",font="Arial 14 underline",text_color="#42b3f5",enable_events=True,tooltip="Redirect Link to Chocolatey's Website.", key="-URL_REDIRECT-"),sg.Text("a solid WPM which executes commands and installs Software.")],
+          [sg.Text("This Program uses"),sg.Text("Chocolatey",font="Arial 14 underline",text_color="#6fb97e",enable_events=True,tooltip="Redirect Link to Chocolatey's Website.", key="-URL_REDIRECT-"),sg.Text("a solid WPM which executes commands and installs Software.")],
           [sg.Text("Built using Python and the PySimpleGUI Module.")],
           [sg.Text()],
           [sg.Text("If you don't have Chocolatey, please install it with the 'Install Chocolatey' button.")],
           [sg.Text("You can install a Predefined Package with the 'Install Packages' button.")],
-          [sg.Text("Lastly you can go to"),sg.Text("Chocolatey Packages",font="Arial 14 underline",text_color="#42b3f5",enable_events=True,tooltip="Redirect Link to Chocolatey's Package Page.", key="-URL_REDIRECT_PACKAGES-"),sg.Text("and bundle your own Packages and add it as a .txt File to this Program.")]]
+          [sg.Text("Lastly you can go to"),sg.Text("Chocolatey Packages",font="Arial 14 underline",text_color="#6fb97e",enable_events=True,tooltip="Redirect Link to Chocolatey's Package Page.", key="-URL_REDIRECT_PACKAGES-"),sg.Text("and bundle your own Packages and add it as a .txt File to this Program.")]]
 
 layout_buttons = [[sg.Text()],
                   [sg.Text("If you want to List the Predefined Packages",font="Arial 16 bold"),sg.Push(),sg.Button("List Packages",size=(15,1))],
