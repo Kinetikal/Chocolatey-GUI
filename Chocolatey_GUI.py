@@ -2,43 +2,29 @@ import PySimpleGUI as sg
 import subprocess, sys, webbrowser, os
 from pathlib import Path
 
-user_defined_choco_packages = ["choco install firefox --version 111.0.1 -y",
-"choco install vcredist140 --version 14.34.31938 -y",
-"choco install python3 --version 3.11.3 -y",
+predefined_choco_package = ["choco install firefox --version 111.0.1 -y",
 "choco install 7zip.install --version 22.1 -y",
-"choco install vlc --version 3.0.18 -y",
-"choco install git.install --version 2.40.0 -y",
-"choco install vscode --version 1.77.3 -y",
-"choco install treesizefree --version 4.6.3 -y",
-"choco install amd-ryzen-chipset --version 2023.2.28 -y",
-"choco install nvidia-display-driver --version 531.41 -y",
-"choco install sharex --version 15.0.0 -y",
-"choco install discord --version 1.0.9005 -y",
-"choco install handbrake --version 1.6.1 -y",
-"choco install steam --version 2.10.91.91221129 -y",
-"choco install epicgameslauncher --version 1.3.51.0 -y",
-"choco install ea-app --version 12.158.0.5415 -y",
-"choco install ubisoft-connect --version 140.0.0.10857 -y",
-"choco install notepadplusplus --version 8.5.2 -y",
-"choco install msiafterburner --version 4.6.5.230316 -y"]
+"choco install vlc --version 3.0.18 -y"]
 
 # Install proccess for Chocolatey, in case you don't have it. #
 def install_choco():
-    result = subprocess.run(["powershell.exe", "Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))"], shell=True, capture_output=True, text=True)
+    result = subprocess.run(["powershell.exe", "Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))"], capture_output=True, text=True)
     window["-OUTPUT-"].print(result.stdout)
     
 # My personal predefined Software Package that I use on a Fresh Windows Install. #
-def predefined_choco_packages(list):
+def install_predefined_choco_packages(list_packages):
     count = 0
-    for element in list:
+    for element in list_packages:
         count += 1
-        print(f"Running Script: {count}/{len(list)}")
-
-        subprocess.run(["powershell.exe", element])
-        window["-OUTPUT-"].print(subprocess.run(["powershell.exe", element]))
+        window['-PBAR-'].update(0 + count)
+        window["-STATUSBAR-"].update(value = f"Running Script: {count}/{len(list_packages)}", text_color = "#6fb97e")
+        result = subprocess.run(["powershell.exe", element], text = True)
+        window["-OUTPUT-"].print(result)
+        window["-STATUSBAR-"].update(value = "Waiting for an Event", text_color = "#778eca")
+        window['-PBAR-'].update(0)
     
 # Option to add your own Software Package as a .txt file which will be read and set as an Variable. #
-def read_package_content(file_to_read):
+def read_user_added_package(file_to_read):
     try:
         file_to_read = Path(file_to_read).read_text()
         window["-OUTPUT-"].print(f">>> Your Package contains:\n{file_to_read}")
@@ -46,7 +32,7 @@ def read_package_content(file_to_read):
         window["-OUTPUT-"].print(">>> FileNotFoundError: No file found, check Input.")
 
 # Reads the .txt file that is found in the Input Field and executes every single LINE one by one and returns a returncode 1 = ERROR and returncode 0 = SUCCESSFULL
-def install_useradded_package(install_own_package):
+def install_user_added_package(install_own_package):
     try:
         with open(install_own_package) as file:
             lines = [line.rstrip() for line in file]
@@ -54,11 +40,13 @@ def install_useradded_package(install_own_package):
         count = 0
         for element in lines:
             count += 1
-            print(f"Running Script: {count}/{len(lines)}")
-
-            subprocess.run(["powershell.exe", element])
-            window["-OUTPUT-"].print(subprocess.run(["powershell.exe", element]))
-        
+            window['-PBAR-'].update(0 + count)
+            window["-STATUSBAR-"].update(value = f"Running Script: {count}/{len(lines)}", text_color = "#6fb97e")
+            result = subprocess.run(["powershell.exe", element], text=True)
+            window["-OUTPUT-"].print(result)
+            window["-STATUSBAR-"].update(value = "Waiting for an Event", text_color = "#778eca")
+            window['-PBAR-'].update(0)
+            
     except FileNotFoundError:
         window["-OUTPUT-"].print(">>> FileNotFoundError: No file found, check Input.")
 
@@ -78,7 +66,7 @@ layout_description = [[sg.Text("Chocolatey-GUI", font="Arial 20 bold underline")
           [sg.Text("Lastly you can go to"),sg.Text("Chocolatey Packages",font="Arial 14 underline",text_color="#42b3f5",enable_events=True,tooltip="Redirect Link to Chocolatey's Package Page.", key="-URL_REDIRECT_PACKAGES-"),sg.Text("and bundle your own Packages and add it as a .txt File to this Program.")]]
 
 layout_buttons = [[sg.Text()],
-                  [sg.Text("If you want to list the predefined Packages",font="Arial 16 bold"),sg.Push(),sg.Button("List Packages",size=(15,1))],
+                  [sg.Text("If you want to List the Predefined Packages",font="Arial 16 bold"),sg.Push(),sg.Button("List Packages",size=(15,1))],
                   [sg.Text("Install Chocolatey with Windows PowerShell",font="Arial 16 bold"),sg.Push(),sg.Button("Install Chocolatey",size=(15,1))],
                   [sg.Text("Install Predefined Chocolatey Packages",font="Arial 16 bold"),sg.Push(),sg.Button("Install Packages",size=(15,1))]]
 
@@ -86,14 +74,14 @@ layout_addown_n_output = [[sg.Text("Add own package File:"),sg.Input(key="-CONF_
                           [sg.HSeparator()],
                           [sg.Multiline(size=(90,10),key="-OUTPUT-")]]
 
-frame_layout_end = [[sg.Button("Exit",size=(10,1),tooltip="Exit the Program.", expand_x=True)]]
+frame_layout_end = [[sg.Text("Status:"),sg.StatusBar(f"Waiting for an Event",key="-STATUSBAR-",text_color="#778eca",size=(16,1)),sg.Text("Progress:"),sg.ProgressBar(10, orientation= "h", bar_color="#6fb97e",size=(50,25), key="-PBAR-"),sg.Button("Exit",size=(10,1),tooltip="Exit the Program.", expand_x=True)]]
 
 layout = [[sg.Column(layout_description)],
           [sg.HSeparator()],
           [sg.Column(layout_buttons)],
           [sg.Text()],
           [sg.Column(layout_addown_n_output)],
-          [sg.Column(frame_layout_end, justification="right")]]
+          [sg.Column(frame_layout_end, justification="center")]]
 
 window = sg.Window("Chocolatey Package Manager",layout,font=font, finalize=True,right_click_menu=MENU_RIGHT_CLICK)
 
@@ -118,19 +106,22 @@ while True:
         window.perform_long_operation(install_choco,"-OUTPUT-")
         
     elif event == "Install Packages":
-        window.perform_long_operation(predefined_choco_packages(user_defined_choco_packages),"-OUTPUT-")
+        window["-PBAR-"].update(max=len(predefined_choco_package))
+        window.refresh()
+        window.perform_long_operation(lambda: install_predefined_choco_packages(predefined_choco_package),"-OUTPUT-")
+        
     
     elif event == "List Packages":
         window["-OUTPUT-"].print(">>> The user defined Package contains: ")
-        for x in user_defined_choco_packages:
+        for x in predefined_choco_package:
             window["-OUTPUT-"].print(x)
         
     elif event == "Add" and len(values["-CONF_INPUT-"]) > 0:
-        window.perform_long_operation(lambda: read_package_content(add_own_package),"-OUTPUT-")
+        window.perform_long_operation(lambda: read_user_added_package(add_own_package),"-OUTPUT-")
         
     elif event == "Install" and len(values["-CONF_INPUT-"]) > 0 and "Search for a .txt File" not in values["-CONF_INPUT-"]:
         window["-OUTPUT-"].print(">>> Installing Package from Input...")
-        window.perform_long_operation(lambda: install_useradded_package(add_own_package),"-OUTPUT-")
+        window.perform_long_operation(lambda: install_user_added_package(add_own_package),"-OUTPUT-")
         
     elif event == "Install" and values["-CONF_INPUT-"] == "Search for a .txt File" or values["-CONF_INPUT-"] == "":
         window["-OUTPUT-"].print(">>> FileNotFoundError: No file found, check Input.")
