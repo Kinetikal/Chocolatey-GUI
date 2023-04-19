@@ -31,15 +31,14 @@ choco install vscode --version 1.77.3 -y
 choco install treesizefree --version 4.6.3 -y
 choco install handbrake --version 1.6.1 -y
 ```
-With new lines where the installer will iterate through the lines and execute the commands one by one.
+with new lines where the installer will iterate through the lines and execute the commands one by one.
 
 ## Setting your own Predefine Package
 
-If you don't want to read a Package from a .txt File, you can change the code Lines to your own Predefined Package and with a press of a button run it.
+If you don't want to read a Package from a .txt File, you can change the variable at the top of the code (Line 5) to your own Predefined Package and with a press of a button install it.
 
 Code to change:
 ```python
-def predefined_choco_packages():
     chocolatey_packages = """ Enter the Package Build Content Here """
     # Docstring as String Variable is used isntead of making multiple Variables where each would start with choco install APPNAME 
 ```
