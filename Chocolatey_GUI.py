@@ -8,8 +8,17 @@ predefined_choco_package = ["choco install firefox --version 111.0.1 -y",
 
 # Install function for Chocolatey, in case you don't have it
 def install_choco():
+    
+    window["-PBAR-"].update(0,max=1)
+    window["-PBAR-"].update(current_count= 0 + 1)
+    
+    window["-STATUSBAR-"].update(value = "Running Script", text_color = "#6fb97e")
     result = subprocess.run(["powershell.exe", "Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))"], capture_output=True, text=True)
     window["-OUTPUT-"].print(result.stdout)
+    time.sleep(1)
+        
+    window["-PBAR-"].update(0)
+    window["-STATUSBAR-"].update(value = "Waiting for an Event", text_color = "#778eca")
     
 # My personal predefined Software Package that I use on a Fresh Windows Install
 def install_predefined_choco_packages(package_list):
@@ -66,7 +75,7 @@ my_new_theme = {'BACKGROUND': '#1c1e23',
                 'TEXT': '#d2d2d3',
                 'INPUT': '#3d3f46',
                 'TEXT_INPUT': '#d2d2d3',
-                'SCROLL': '#c7e78b',
+                'SCROLL': '#6fb97e',
                 'BUTTON': ('#6fb97e', '#313641'),
                 'PROGRESS': ('#778eca', '#6fb97e'),
                 'BORDER': 1,
