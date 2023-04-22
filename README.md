@@ -1,7 +1,6 @@
 # Chocolatey-GUI
 The Chocolatey Windows Package Manager, built as a GUI with Python's PySimpleGUI Module.
 
-
 ## Usage
 
 This program is fairly simple. It reads events and stores them in Variables which get executed in Functions.
@@ -12,12 +11,6 @@ There is a predefined package that I use but it can be skipped/deleted.
 Also there is an Option to add your own Package as a .txt File and install that.
 
 Python will read the .txt file and save it's content which would look like this ``` choco install firefox --version 111.0.1 -y ``` which will install Firefox with Chocolatey.
-
-## Use the .exe to run it as a Program
-
-I converted the Script into a .exe File in the ```Chocolatey_GUI``` folder.
-Download the whole Folder and save it to anywhere you like. Open the Chocolatey_GUI.exe and start using the Program as normal.
-
 
 ## How the package .txt File should be formatted
 
@@ -42,6 +35,13 @@ Code to change:
     chocolatey_packages = [ "Enter the Package Build Content Here" ]
     # Docstring as String Variable is used isntead of making multiple Variables where each would start with choco install APPNAME 
 ```
+
+## Use the .exe to run it as a Program
+
+I converted the Script into a .exe File in the ```Chocolatey_GUI``` folder.
+Download the whole Folder and save it to anywhere you like. Open the Chocolatey_GUI.exe and start using the Program as normal.
+
+Also, if you would like to use your own predefined which you changed in the code I would recommend to use ```auto-py-to-exe``` to make a .exe out of the Script and that way make your own .exe file.
 
 ## Screenshots
 ![Chocolatey-GUI](https://user-images.githubusercontent.com/93329694/233053660-4e73ea42-0752-4b3b-b99b-21c8d8ad433a.png)
