@@ -3,8 +3,8 @@ import subprocess, sys, webbrowser, os, time
 from pathlib import Path
 
 predefined_choco_package = [
-"choco install discord --version 1.0.9005 -y"
-"choco install firefox --version 111.0.1 -y"
+"choco install discord --version 1.0.9005 -y",
+"choco install firefox --version 111.0.1 -y",
 "choco install sharex --version 15.0.0 -y",
 "choco install vlc --version 3.0.18 -y",
 "choco install notepadplusplus --version 8.5.2 -y",
@@ -114,16 +114,16 @@ layout_description = [[sg.Image(logo),sg.Text("Chocolatey-GUI", font="Arial 24 b
           [sg.Text()],
           [sg.Text("A Package Manager with a GUI that uses the Windows Subprocess to executing commands in PowerShell.")],
           [sg.Text("This Program uses"),sg.Text("Chocolatey",font="Arial 14 underline",text_color="#6fb97e",enable_events=True,tooltip="Redirect Link to Chocolatey's Website.", key="-URL_REDIRECT-"),sg.Text("and it's Script automation to install the desired Software.")],
-          [sg.Text("Built using Python and the amazing PySimpleGUI Module.")],
+          [sg.Text("Built with love using Python and the amazing PySimpleGUI Module.")],
           [sg.Text()],
-          [sg.Text("If you don't have Chocolatey, please install it with the 'Install Chocolatey' button.")],
-          [sg.Text("You can install a Predefined Package with the 'Install Packages' button.")],
+          [sg.Text("If you don't have Chocolatey, you can install it bellow. You can install a Predefined Package as well.")],
+          [sg.Text("The 'Install Package' button will be disabled, to enable it press the 'List Package' button.")],
           [sg.Text("Lastly you can go to"),sg.Text("Chocolatey Packages",font="Arial 14 underline",text_color="#6fb97e",enable_events=True,tooltip="Redirect Link to Chocolatey's Package Page.", key="-URL_REDIRECT_PACKAGES-"),sg.Text("and bundle your own Packages and add it as a .txt File to this Program.")]]
 
 layout_buttons = [[sg.Text()],
-                  [sg.Text("If you want to List the predefined Package",font="Arial 16 bold"),sg.Push(),sg.Button("List Package",size=(15,1),key="-LIST_PACKAGE-")],
                   [sg.Text("Install Chocolatey with Windows PowerShell",font="Arial 16 bold"),sg.Push(),sg.Button("Install Chocolatey",size=(15,1),key="-INSTALL_CHOCOLATEY-")],
-                  [sg.Text("Install the predefined Chocolatey Package",font="Arial 16 bold"),sg.Push(),sg.Button("Install Package",size=(15,1),key="-INSTALL_PACKAGE-")]]
+                  [sg.Text("If you want to List the predefined Package",font="Arial 16 bold"),sg.Push(),sg.Button("List Package",size=(15,1),key="-LIST_PACKAGE-")],
+                  [sg.Text("Install the predefined Chocolatey Package",font="Arial 16 bold"),sg.Push(),sg.Button("Install Package",size=(15,1),key="-INSTALL_PACKAGE-",disabled=True)]]
 
 layout_addown_n_output = [[sg.Text("Add own package File:"),sg.Input(key="-CONF_INPUT-",default_text="Search for a .txt File"),sg.FileBrowse(file_types=(("Text File", "*.txt"),)),sg.Button("Add", tooltip="Adds and prints the file content into the Output.", key="-ADD-"),sg.Button("Install",tooltip="Starts intalling the Package as a PowerShell script. BE CAREFUL!", key="-INSTALL-")],
                           [sg.HSeparator()],
@@ -165,9 +165,10 @@ while True:
         window.perform_long_operation(lambda: install_predefined_choco_packages(predefined_choco_package),"-OUTPUT-")
     
     elif event == "-LIST_PACKAGE-":
-        window["-OUTPUT-"].print(">>> The user defined Package contains: ")
+        window["-OUTPUT-"].print(">>> The predefined Package contains: ")
         for x in predefined_choco_package:
             window["-OUTPUT-"].print(x)
+        window["-INSTALL_PACKAGE-"].update(disabled=False)
         
     elif event == "-ADD-" and len(values["-CONF_INPUT-"]) > 0:
         window.perform_long_operation(lambda: read_user_added_package(add_own_package),"-OUTPUT-")
