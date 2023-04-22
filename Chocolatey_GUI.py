@@ -30,7 +30,7 @@ def install_choco():
     window["-PBAR-"].update(0,max=1)
     window["-PBAR-"].update(current_count= 0 + 1)
     
-    window["-STATUSBAR-"].update(value = "Running Script", text_color = "#6fb97e")
+    window["-STATUSBAR-"].update(value = "Running Installer", text_color = "#6fb97e")
     result = subprocess.run(["powershell.exe", "Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))"], capture_output=True, text=True)
     window["-OUTPUT-"].print(result.stdout)
     time.sleep(1)
