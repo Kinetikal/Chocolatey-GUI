@@ -2,9 +2,27 @@ import PySimpleGUI as sg
 import subprocess, sys, webbrowser, os, time
 from pathlib import Path
 
-predefined_choco_package = ["choco install firefox --version 111.0.1 -y",
-                                    "choco install 7zip.install --version 22.1 -y",
-                                    "choco install vlc --version 3.0.18 -y"]
+predefined_choco_package = [
+"choco install discord --version 1.0.9005 -y"
+"choco install firefox --version 111.0.1 -y"
+"choco install sharex --version 15.0.0 -y",
+"choco install vlc --version 3.0.18 -y",
+"choco install notepadplusplus --version 8.5.2 -y",
+"choco install lghub --version 2023.2.3424 -y",
+"choco install icue --version 4.33.138 -y",
+"choco install vscode --version 1.77.2 -y",
+"choco install bitwarden --version 2023.3.1 -y",
+"choco install hwinfo --version 7.42 -y",
+"choco install handbrake --version 1.6.1 -y",
+"choco install treesizefree --version 4.6.3 -y",
+"choco install obsidian --version 1.1.16 -y",
+"choco install cheatengine --version 7.5 -y",
+"choco install steam --version 2.10.91.91221129 -y",
+"choco install ea-app --version 12.148.0.5405 -y",
+"choco install epicgameslauncher --version 1.3.51.0 -y",
+"choco install ubisoft-connect --version 140.0.0.10852 -y",
+"choco install github-desktop --version 3.2.1 -y"
+]
 
 # Install function for Chocolatey, in case you don't have it
 def install_choco():
@@ -75,7 +93,7 @@ my_new_theme = {'BACKGROUND': '#1c1e23',
                 'TEXT': '#d2d2d3',
                 'INPUT': '#3d3f46',
                 'TEXT_INPUT': '#d2d2d3',
-                'SCROLL': '#6fb97e',
+                'SCROLL': '#3d3f46',
                 'BUTTON': ('#6fb97e', '#313641'),
                 'PROGRESS': ('#778eca', '#6fb97e'),
                 'BORDER': 1,
@@ -87,11 +105,12 @@ sg.theme_add_new('MyGreen', my_new_theme)
 
 # Switch your theme to use the newly added one. You can add spaces to make it more readable
 sg.theme("MyGreen")
-font=("Arial", 16)
+font = ("Roboto", 16)
+logo = "logo.png"
 
 MENU_RIGHT_CLICK = ["",["Clear Output", "Version", "Exit"]]
 
-layout_description = [[sg.Text("Chocolatey-GUI", font="Arial 24 bold underline", text_color="#6fb97e")],
+layout_description = [[sg.Image(logo),sg.Text("Chocolatey-GUI", font="Arial 24 bold underline", text_color="#6fb97e")],
           [sg.Text()],
           [sg.Text("A Package Manager with a GUI that uses the Windows Subprocess to executing commands in PowerShell.")],
           [sg.Text("This Program uses"),sg.Text("Chocolatey",font="Arial 14 underline",text_color="#6fb97e",enable_events=True,tooltip="Redirect Link to Chocolatey's Website.", key="-URL_REDIRECT-"),sg.Text("and it's Script automation to install the desired Software.")],
@@ -102,9 +121,9 @@ layout_description = [[sg.Text("Chocolatey-GUI", font="Arial 24 bold underline",
           [sg.Text("Lastly you can go to"),sg.Text("Chocolatey Packages",font="Arial 14 underline",text_color="#6fb97e",enable_events=True,tooltip="Redirect Link to Chocolatey's Package Page.", key="-URL_REDIRECT_PACKAGES-"),sg.Text("and bundle your own Packages and add it as a .txt File to this Program.")]]
 
 layout_buttons = [[sg.Text()],
-                  [sg.Text("If you want to List the Predefined Package",font="Arial 16 bold"),sg.Push(),sg.Button("List Package",size=(15,1),key="-LIST_PACKAGE-")],
+                  [sg.Text("If you want to List the predefined Package",font="Arial 16 bold"),sg.Push(),sg.Button("List Package",size=(15,1),key="-LIST_PACKAGE-")],
                   [sg.Text("Install Chocolatey with Windows PowerShell",font="Arial 16 bold"),sg.Push(),sg.Button("Install Chocolatey",size=(15,1),key="-INSTALL_CHOCOLATEY-")],
-                  [sg.Text("Install Predefined Chocolatey Package",font="Arial 16 bold"),sg.Push(),sg.Button("Install Package",size=(15,1),key="-INSTALL_PACKAGE-")]]
+                  [sg.Text("Install the predefined Chocolatey Package",font="Arial 16 bold"),sg.Push(),sg.Button("Install Package",size=(15,1),key="-INSTALL_PACKAGE-")]]
 
 layout_addown_n_output = [[sg.Text("Add own package File:"),sg.Input(key="-CONF_INPUT-",default_text="Search for a .txt File"),sg.FileBrowse(file_types=(("Text File", "*.txt"),)),sg.Button("Add", tooltip="Adds and prints the file content into the Output.", key="-ADD-"),sg.Button("Install",tooltip="Starts intalling the Package as a PowerShell script. BE CAREFUL!", key="-INSTALL-")],
                           [sg.HSeparator()],
