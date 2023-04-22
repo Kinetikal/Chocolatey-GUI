@@ -44,6 +44,6 @@ Download the whole Folder and save it to anywhere you like. Open the Chocolatey_
 Also, if you would like to use your own predefined which you changed in the code I would recommend to use ```auto-py-to-exe``` to make a .exe out of the Script and that way make your own .exe file.
 
 ## Screenshots
-![Chocolatey-GUI](https://user-images.githubusercontent.com/93329694/233053660-4e73ea42-0752-4b3b-b99b-21c8d8ad433a.png)
+![python_5y7BB9zbdQ](https://user-images.githubusercontent.com/93329694/233802814-521c5576-b52e-4874-ab85-9c9c68b811fb.png)
 
 
