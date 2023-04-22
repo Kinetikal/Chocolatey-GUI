@@ -18,6 +18,8 @@ Python will read the .txt file and save it's content which would look like this 
 I converted the Script into a .exe File in the ```Chocolatey_GUI``` folder.
 Download the whole Folder and save it to anywhere you like. Open the Chocolatey_GUI.exe and start using the Program as normal.
 
+Also, if you would like to use your own predefined which you changed in the code I would recommend to use ```auto-py-to-exe``` to make a .exe out of the Script and that way make your own .exe file.
+
 
 ## How the package .txt File should be formatted
 
