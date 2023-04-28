@@ -42,7 +42,7 @@ Download the whole Folder and save it to anywhere you like. Open the Chocolatey_
 
 If you would like to make a executable with your own Predefined Package in the code I would recommend to use the [auto-py-to-exe](https://pypi.org/project/auto-py-to-exe/) module. 
 
-You can install it with```pip install auto-py-to-exe```.
+You can install it with ```pip install auto-py-to-exe```.
 
 ## Screenshots
 ![python_5y7BB9zbdQ](https://user-images.githubusercontent.com/93329694/233802814-521c5576-b52e-4874-ab85-9c9c68b811fb.png)
