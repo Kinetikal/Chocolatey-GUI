@@ -1,4 +1,4 @@
-# ChocolateyGUI
+# Chocolatey-GUI
 The Chocolatey Windows Package Manager, built as a GUI with Python's PySimpleGUI Module.
 
 ## Usage
@@ -8,11 +8,13 @@ These functions open a subprocces in PowerShell and run the commands in the Powe
 This makes the proccess quicker and somewhat automated.
 
 There is a predefined package that I use but it can be skipped/deleted.
-Also there is an Option to add your own Package as a text File and install that.
+Also there is an Option to add your own Package as a .txt File and install that.
 
-## How the package text File should be formatted
+Python will read the .txt file and save it's content which would look like this ``` choco install firefox --version 111.0.1 -y ``` which will install Firefox with Chocolatey.
 
-The text File which contains multiple packages should be formated like this:
+## How the package .txt File should be formatted
+
+The .txt File which contains multiple packages should be formated like this:
 ```
 choco install python3 --version 3.11.3 -y
 choco install 7zip.install --version 22.1 -y
@@ -24,15 +26,14 @@ choco install handbrake --version 1.6.1 -y
 ```
 with new lines where the installer will iterate through the lines and execute the commands one by one.
 
-A Script File that if formated like this can be grabbed from [Chocolatey Packages](https://community.chocolatey.org/packages) by building your own package of apps and copying the Script and saving it as a text File.
+## Setting your own Predefine Package
 
-## Setting your own Predefine Package in the code
-
-If you don't want to read a Package from a text File (For example: Set a hardcoded package in the Python code and run that when you have a fresh Install of Windows), you can change the variable code (Line 5) to your own Predefined Package and with a press of a button install it. The Variable is a list.
+If you don't want to read a Package from a .txt File, you can change the variable at the top of the code (Line 5) to your own Predefined Package and with a press of a button install it. The Variable is a list.
 
 Code to change:
 ```python
-    chocolatey_packages = [ "Enter the Package Script Here" ]
+    chocolatey_packages = [ "Enter the Package Build Content Here" ]
+    # Docstring as String Variable is used isntead of making multiple Variables where each would start with choco install APPNAME 
 ```
 
 ## Use the .exe to run it as a Program
@@ -40,11 +41,9 @@ Code to change:
 I converted the Script into a .exe File in the ```Chocolatey_GUI``` folder.
 Download the whole Folder and save it to anywhere you like. Open the Chocolatey_GUI.exe and start using the Program as normal.
 
-If you would like to make a executable with your own Predefined Package in the code I would recommend to use the [auto-py-to-exe](https://pypi.org/project/auto-py-to-exe/) module. 
-
-You can install it with ```pip install auto-py-to-exe```.
+Also, if you would like to use your own predefined which you changed in the code I would recommend to use ```auto-py-to-exe``` to make a .exe out of the Script and that way make your own .exe file.
 
 ## Screenshots
-![python_5y7BB9zbdQ](https://user-images.githubusercontent.com/93329694/233802814-521c5576-b52e-4874-ab85-9c9c68b811fb.png)
+![Chocolatey-GUI](https://user-images.githubusercontent.com/93329694/233053660-4e73ea42-0752-4b3b-b99b-21c8d8ad433a.png)
 
 

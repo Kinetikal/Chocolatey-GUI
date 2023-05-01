@@ -106,15 +106,14 @@ sg.theme_add_new('MyGreen', my_new_theme)
 # Switch your theme to use the newly added one. You can add spaces to make it more readable
 sg.theme("MyGreen")
 font = ("Roboto", 16)
-logo = "logo.png"
 
 MENU_RIGHT_CLICK = ["",["Clear Output", "Version", "Exit"]]
 
-layout_description = [[sg.Image(logo),sg.Text("Chocolatey-GUI", font="Arial 24 bold underline", text_color="#6fb97e")],
+layout_description = [[sg.Text("Chocolatey-GUI", font="Arial 24 bold underline", text_color="#6fb97e")],
           [sg.Text()],
           [sg.Text("A Package Manager with a GUI that uses the Windows Subprocess to executing commands in PowerShell.")],
           [sg.Text("This Program uses"),sg.Text("Chocolatey",font="Arial 14 underline",text_color="#6fb97e",enable_events=True,tooltip="Redirect Link to Chocolatey's Website.", key="-URL_REDIRECT-"),sg.Text("and it's Script automation to install the desired Software.")],
-          [sg.Text("Built with love using Python and the amazing PySimpleGUI Module.")],
+          [sg.Text("Hint: There are tooltips on mouse hover and underlined text are Web Links.")],
           [sg.Text()],
           [sg.Text("If you don't have Chocolatey, you can install it bellow. You can install a Predefined Package as well.")],
           [sg.Text("The 'Install Package' button will be disabled, to enable it press the 'List Package' button.")],
