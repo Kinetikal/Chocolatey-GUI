@@ -120,11 +120,14 @@ layout_description = [[sg.Text("Chocolatey-GUI", font="Arial 24 bold underline",
           [sg.Text("Lastly you can go to"),sg.Text("Chocolatey Packages",font="Arial 14 underline",text_color="#6fb97e",enable_events=True,tooltip="Redirect Link to Chocolatey's Package Page.", key="-URL_REDIRECT_PACKAGES-"),sg.Text("and bundle your own Packages and add it as a .txt File to this Program.")]]
 
 layout_buttons = [[sg.Text()],
-                  [sg.Text("Install Chocolatey with Windows PowerShell",font="Arial 16 bold"),sg.Push(),sg.Button("Install Chocolatey",size=(15,1),key="-INSTALL_CHOCOLATEY-")],
-                  [sg.Text("If you want to List the predefined Package",font="Arial 16 bold"),sg.Push(),sg.Button("List Package",size=(15,1),key="-LIST_PACKAGE-")],
-                  [sg.Text("Install the predefined Chocolatey Package",font="Arial 16 bold"),sg.Push(),sg.Button("Install Package",size=(15,1),key="-INSTALL_PACKAGE-",disabled=True)]]
+                  [sg.Text("Install Choco:",font="Arial 16 bold"),sg.Push(),sg.Button("Install Chocolatey",size=(15,1),key="-INSTALL_CHOCOLATEY-")],
+                  [sg.Text("List Packages:",font="Arial 16 bold"),sg.Push(),sg.Button("List Package",size=(15,1),key="-LIST_PACKAGE-")],
+                  [sg.Text("Install Packages",font="Arial 16 bold"),sg.Push(),sg.Button("Install Package",size=(15,1),key="-INSTALL_PACKAGE-",disabled=True)]]
 
-layout_addown_n_output = [[sg.Text("Add own package File:"),sg.Input(key="-CONF_INPUT-",default_text="Search for a .txt File"),sg.FileBrowse(file_types=(("Text File", "*.txt"),)),sg.Button("Add", tooltip="Adds and prints the file content into the Output.", key="-ADD-"),sg.Button("Install",tooltip="Starts intalling the Package as a PowerShell script. BE CAREFUL!", key="-INSTALL-")],
+layout_custom_package_url = [[sg.Text("Custom Package URL:")],
+                             [sg.Input(size=(15,2),key="-REPO_URL-"),sg.Button("Load", key="-LOAD_BUTTON-")]]
+
+layout_addown_n_output = [[sg.Text("Add own package File:"),sg.Input(key="-CONF_INPUT-",default_text="Search for a .txt File"),sg.FileBrowse(file_types=(("Text File", "*.txt"),)),sg.Button("Read", tooltip="Adds and prints the file content into the Output.", key="-READ-"),sg.Button("Install",tooltip="Starts intalling the Package as a PowerShell script. BE CAREFUL!", key="-INSTALL-")],
                           [sg.HSeparator()],
                           [sg.Multiline(size=(90,10),key="-OUTPUT-")]]
 
@@ -132,7 +135,7 @@ frame_layout_end = [[sg.Text("Status:"),sg.StatusBar(f"Waiting for an Event",key
 
 layout = [[sg.Column(layout_description)],
           [sg.HSeparator()],
-          [sg.Column(layout_buttons)],
+          [sg.Column(layout_buttons),sg.VerticalSeparator(),sg.Column(layout_custom_package_url,justification="top")],
           [sg.Text()],
           [sg.Column(layout_addown_n_output)],
           [sg.Column(frame_layout_end, justification="center")]]
@@ -169,13 +172,19 @@ while True:
             window["-OUTPUT-"].print(x)
         window["-INSTALL_PACKAGE-"].update(disabled=False)
         
-    elif event == "-ADD-" and len(values["-CONF_INPUT-"]) > 0:
+    elif event == "-READ-" and len(values["-CONF_INPUT-"]) > 0:
         window.perform_long_operation(lambda: read_user_added_package(add_own_package),"-OUTPUT-")
         
     elif event == "-INSTALL-" and len(values["-CONF_INPUT-"]) > 0 and "Search for a .txt File" not in values["-CONF_INPUT-"]:
         window["-OUTPUT-"].print(">>> Installing Package from Input...")
         window.perform_long_operation(lambda: install_user_added_package(add_own_package),"-OUTPUT-")
         
+    elif event == "-LOAD_BUTTON-" and values["-REPO_URL-"]:
+        custom_repo_url = values["-REPO_URL-"]
+        install_command = f"choco install --source={custom_repo_url} <package_name>"
+        result = subprocess.run(["powershell.exe", install_command], text=True)
+        window["-OUTPUT-"].print(result)
+    
     elif event == "-INSTALL-" and values["-CONF_INPUT-"] == "Search for a .txt File" or values["-CONF_INPUT-"] == "":
         window["-OUTPUT-"].print(">>> FileNotFoundError: No file found, check Input.")
         
