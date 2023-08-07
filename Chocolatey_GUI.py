@@ -33,8 +33,8 @@ def main():
             window["-PBAR-"].update(current_count= 0 + 1)
 
             window["-STATUSBAR-"].update(value = "Running Installer", text_color = "#6fb97e")
-            result = subprocess.run(["powershell.exe", "Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol    =  [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; iex ((New-Object System.Net.WebClient).DownloadString('https://community. chocolatey.org/   install.ps1'))"], stdout=subprocess.PIPE,stderr=subprocess.PIPE,text=True,shell=True)
-            window["-OUTPUT-"].print(f">>> {result.stdout}\n {result.stderr}\n")
+            process = subprocess.run(["powershell.exe","Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol    =  [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; iex ((New-Object System.Net.WebClient).DownloadString('https://community. chocolatey.org/   install.ps1'))"], stdout=subprocess.PIPE,stderr=subprocess.PIPE,text=True)
+            window["-OUTPUT-"].print(f">>> {process.stdout}\n")
             time.sleep(1)
 
             window["-PBAR-"].update(0)
@@ -54,8 +54,11 @@ def main():
             window["-PBAR-"].update(current_count= 0 + count) # Updates the progress bar step by step with the length of the predefined package list
 
             window["-STATUSBAR-"].update(value = f"Running Script: {count}/{len(package_list)}", text_color = "#6fb97e")
-            result = subprocess.run(["powershell.exe", element], stdout=subprocess.PIPE,stderr=subprocess.PIPE,text=True,shell=True) 
-            window["-OUTPUT-"].print(f">>> {result.stdout}\n")
+            process = subprocess.run(["powershell.exe", element], stdout=subprocess.PIPE,stderr=subprocess.PIPE,text=True) 
+            stdout,stderr = process.communicate(input="Y")
+            window.refresh()
+            window["-OUTPUT-"].print(f">>> {stdout}\n")
+            window.refresh()
             time.sleep(0.5)
 
         window["-PBAR-"].update(0)
@@ -84,8 +87,11 @@ def main():
                 window["-PBAR-"].update(current_count= 0 + count) # Updates the progress bar step by step with the length of the predefined package list
 
                 window["-STATUSBAR-"].update(value = f"Running Script: {count}/{len(lines)}", text_color = "#6fb97e")
-                result = subprocess.run(["powershell.exe", element], stdout=subprocess.PIPE,stderr=subprocess.PIPE,text=True,shell=True)
-                window["-OUTPUT-"].print(f">>> {result.stdout}\n")
+                process = subprocess.run(["powershell.exe", element], stdout=subprocess.PIPE,stderr=subprocess.PIPE,text=True)
+                stdout,stderr = process.communicate(input="Y")
+                window.refresh()
+                window["-OUTPUT-"].print(f">>> {stdout}\n")
+                window.refresh()
                 time.sleep(0.5)
 
             window["-PBAR-"].update(0)
@@ -95,12 +101,25 @@ def main():
             window["-OUTPUT-"].print(">>> FileNotFoundError: No file found, check Input.")
             
     def check_if_choco_is_installed():
-        result = subprocess.run(["powershell.exe", "choco --version"], stdout=subprocess.PIPE,stderr=subprocess.PIPE,text=True,shell=True)
-        result_output = result.stdout
-        if "1" in result.stdout:
+        
+        process = subprocess.run(["powershell.exe","choco --version"], stdout=subprocess.PIPE,stderr=subprocess.PIPE,text=True)
+        if process.returncode == 0:
+            
+            window["-STATUSBAR-"].update(value = "Checking...", text_color = "#778eca")
+            time.sleep(1)
+            window["-PBAR-"].update(0,max=1)
+            window["-PBAR-"].update(current_count= 0 + 1)
             window["-CHOCO_STATUSBAR-"].update("Chocolatey is Installed")
+            #subprocess.run(["powershell.exe","choco feature enable -n=allowGlobalConfirmation"],stdout=subprocess.PIPE,stderr=subprocess.PIPE,text=True)
+            window["-OUTPUT-"].print(process.stdout)
+            time.sleep(1)
+
+            window["-PBAR-"].update(0)
+            window["-STATUSBAR-"].update(value = "Waiting for an Event", text_color = "#778eca")
+            window.refresh()
         else:
             window["-CHOCO_STATUSBAR-"].update("Chocolatey is not Installed")
+            window["-OUTPUT-"].print(process.stderr)
         
     # Add your new theme colors and settings
     my_new_theme = {"BACKGROUND": "#1c1e23",
@@ -158,7 +177,7 @@ def main():
     window = sg.Window("Chocolatey Package Manager",layout,font=font, finalize=True,right_click_menu=MENU_RIGHT_CLICK)
 
     while True:
-        event, values = window.read()
+        event, values = window.read(timeout=500)
 
         if event == sg.WIN_CLOSED or event == "Exit":
             break
@@ -201,8 +220,8 @@ def main():
         elif event == "-LOAD_BUTTON-" and values["-REPO_URL-"]:
             custom_repo_url = values["-REPO_URL-"]
             install_command = f"choco install --source={custom_repo_url} <package_name>"
-            result = subprocess.run(["powershell.exe", install_command], text=True)
-            window["-OUTPUT-"].print(result)
+            process = subprocess.run([install_command], text=True)
+            window["-OUTPUT-"].print(process)
 
         elif event == "-INSTALL-" and values["-CONF_INPUT-"] == "Search for a .txt File" or values["-CONF_INPUT-"] == "":
             window["-OUTPUT-"].print(">>> FileNotFoundError: No file found, check Input.")
