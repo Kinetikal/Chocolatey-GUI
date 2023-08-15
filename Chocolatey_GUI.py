@@ -35,6 +35,7 @@ def main():
             window["-STATUSBAR-"].update(value = "Running Installer", text_color = "#6fb97e")
             process = subprocess.run(["powershell.exe","Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol    =  [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; iex ((New-Object System.Net.WebClient).DownloadString('https://community. chocolatey.org/   install.ps1'))"], stdout=subprocess.PIPE,stderr=subprocess.PIPE,text=True)
             window["-OUTPUT-"].print(f">>> {process.stdout}\n")
+            window["-OUTPUT_POWERSHELL-"].print(process)
             time.sleep(1)
 
             window["-PBAR-"].update(0)
@@ -50,14 +51,14 @@ def main():
         for element in package_list:
             count += 1
 
+            window["-STATUSBAR-"].update(value = f"Running Script: {count}/{len(package_list)}", text_color = "#6fb97e")
+            process = subprocess.run(["powershell.exe", element], stdout=subprocess.PIPE,stderr=subprocess.PIPE,text=True) 
             window["-PBAR-"].update(0,max=len(package_list)) # Sets the max_value of pg.Progressbar to the length of the predefined package list
             window["-PBAR-"].update(current_count= 0 + count) # Updates the progress bar step by step with the length of the predefined package list
 
-            window["-STATUSBAR-"].update(value = f"Running Script: {count}/{len(package_list)}", text_color = "#6fb97e")
-            process = subprocess.run(["powershell.exe", element], stdout=subprocess.PIPE,stderr=subprocess.PIPE,text=True) 
-            stdout,stderr = process.communicate(input="Y")
             window.refresh()
-            window["-OUTPUT-"].print(f">>> {stdout}\n")
+            window["-OUTPUT-"].print(f">>> {process.stdout}\n")
+            window["-OUTPUT_POWERSHELL-"].print(process)
             window.refresh()
             time.sleep(0.5)
 
@@ -85,12 +86,11 @@ def main():
 
                 window["-PBAR-"].update(0,max=len(lines)) # Sets the max_value of pg.Progressbar to the length of the predefined package list
                 window["-PBAR-"].update(current_count= 0 + count) # Updates the progress bar step by step with the length of the predefined package list
-
                 window["-STATUSBAR-"].update(value = f"Running Script: {count}/{len(lines)}", text_color = "#6fb97e")
                 process = subprocess.run(["powershell.exe", element], stdout=subprocess.PIPE,stderr=subprocess.PIPE,text=True)
-                stdout,stderr = process.communicate(input="Y")
                 window.refresh()
-                window["-OUTPUT-"].print(f">>> {stdout}\n")
+                window["-OUTPUT-"].print(f">>> {process.stdout}\n")
+                window["-OUTPUT_POWERSHELL-"].print(process)
                 window.refresh()
                 time.sleep(0.5)
 
@@ -99,22 +99,19 @@ def main():
 
         except FileNotFoundError:
             window["-OUTPUT-"].print(">>> FileNotFoundError: No file found, check Input.")
+        if process.returncode == 1:
+            window["-OUTPUT-"].print(">>> Ran on Errors. Reason: Command Wrong most likely.")
+            
             
     def check_if_choco_is_installed():
         
+        window["-STATUSBAR-"].update(value = "Checking...", text_color = "#778eca")
         process = subprocess.run(["powershell.exe","choco --version"], stdout=subprocess.PIPE,stderr=subprocess.PIPE,text=True)
+        window["-OUTPUT_POWERSHELL-"].print(process)
         if process.returncode == 0:
-            
-            window["-STATUSBAR-"].update(value = "Checking...", text_color = "#778eca")
-            time.sleep(1)
-            window["-PBAR-"].update(0,max=1)
-            window["-PBAR-"].update(current_count= 0 + 1)
             window["-CHOCO_STATUSBAR-"].update("Chocolatey is Installed")
             #subprocess.run(["powershell.exe","choco feature enable -n=allowGlobalConfirmation"],stdout=subprocess.PIPE,stderr=subprocess.PIPE,text=True)
-            window["-OUTPUT-"].print(process.stdout)
-            time.sleep(1)
-
-            window["-PBAR-"].update(0)
+            window["-OUTPUT-"].print(f"Chocolatey is installed | Version: {process.stdout}")
             window["-STATUSBAR-"].update(value = "Waiting for an Event", text_color = "#778eca")
             window.refresh()
         else:
@@ -150,19 +147,20 @@ def main():
               [sg.Text()],
               [sg.Text("If you don't have Chocolatey, you can install it bellow. You can install a Predefined Package as well.")],
               [sg.Text("The 'Install Package' button will be disabled, to enable it press the 'List Package' button.")],
-              [sg.Text("Lastly you can go to"),sg.Text("Chocolatey Packages",font="Arial 14 underline",text_color="#6fb97e",enable_events=True, tooltip="Redirect Link to Chocolatey's Package Page.", key="-URL_REDIRECT_PACKAGES-"),sg.Text("and bundle your own Packages and add it as a .    txt File to this Program.")]]
+              [sg.Text("Lastly you can go to"),sg.Text("Chocolatey Packages",font="Arial 14 underline",text_color="#6fb97e",enable_events=True, tooltip="Redirect Link to Chocolatey's Package Page.", key="-URL_REDIRECT_PACKAGES-"),sg.Text("and bundle your own Packages as a Text File.")]]
 
     layout_buttons = [[sg.Text("Install Choco:",font="Arial 16 bold"),sg.Push(),sg.Button("Install Chocolatey",size=(15,1),key="-INSTALL_CHOCOLATEY-")],
                       [sg.Text("List Packages:",font="Arial 16 bold"),sg.Push(),sg.Button("List Package",size=(15,1),key="-LIST_PACKAGE-")],
-                      [sg.Text("Install Packages",font="Arial 16 bold"),sg.Push(),sg.Button("Install Package",size=(15,1),key="-INSTALL_PACKAGE-",  disabled=True)]]
+                      [sg.Text("Install Packages",font="Arial 16 bold"),sg.Push(),sg.Button("Install Package",size=(15,1),key="-INSTALL_PACKAGE-",disabled=True)]]
 
-    layout_addown_n_output = [[sg.Text("Add own package File:"),sg.Input(key="-CONF_INPUT-",default_text="Search for a .txt File"),sg.FileBrowse(file_types=    (("Text File", "*.txt"),)),sg.Button("Read", tooltip="Adds and prints the file content into the Output.", key="-READ-"),sg.Button("Install",    tooltip="Starts intalling the Package as a PowerShell script. BE CAREFUL!", key="-INSTALL-")],
-                              [sg.HSeparator()],
-                              [sg.Multiline(size=(90,10),key="-OUTPUT-",reroute_stdout=True,reroute_stderr=True)]]
+    layout_addown_n_output = [[sg.Text("Add own package File:"),sg.Input(key="-CONF_INPUT-",default_text="Search for a .txt File"),sg.FileBrowse(file_types=(("Text File", "*.txt"),)),sg.Button("Read", tooltip="Adds and prints the file content into the Output.", key="-READ-"),sg.Button("Install",    tooltip="Starts intalling the Package as a PowerShell script. BE CAREFUL!", key="-INSTALL-")],
+                              [sg.Text()],
+                              [sg.Text("Program Output:",font="Arial 16 bold"),sg.Push(),sg.Text("PowerShell Output:",font="Arial 16 bold")],
+                              [sg.Multiline(size=(40,10),key="-OUTPUT-",reroute_stdout=True,reroute_stderr=True),sg.Multiline(size=(45,10),key="-OUTPUT_POWERSHELL-",reroute_stdout=True,reroute_stderr=True)]]
 
-    frame_layout_end = [[sg.Text("Status:"),sg.StatusBar(f"Waiting for an Event",key="-STATUSBAR-",text_color="#778eca",size=(16,1)),sg.Text("Progress:"),sg.   ProgressBar(10, orientation= "h",size=(50,25), key="-PBAR-"),sg.Button("Exit",size=(10,1),tooltip="Exit the Program.", expand_x=True)]]
+    frame_layout_end = [[sg.Text("Status:"),sg.StatusBar(f"Waiting for an Event",key="-STATUSBAR-",text_color="#778eca",size=(16,1)),sg.Text("Progress:"),sg.ProgressBar(10, orientation= "h",size=(50,25), key="-PBAR-"),sg.Button("Exit",size=(10,1),tooltip="Exit the Program.", expand_x=True)]]
 
-    layout_buttons_2 = [[sg.Text("WIP:")],
+    layout_buttons_2 = [[sg.Text("Work in Progress:")],
                         [sg.Text("Choco Status:"),sg.StatusBar("",key="-CHOCO_STATUSBAR-",size=(5,1)),sg.Button("Check",key="-CHOCO_CHECK_BUTTON-")],
                         [sg.Text("Custom Package URL:"),sg.Input(size=(15,2),key="-REPO_URL-"),sg.Button("Load", key="-LOAD_BUTTON-")]]
 
@@ -177,7 +175,7 @@ def main():
     window = sg.Window("Chocolatey Package Manager",layout,font=font, finalize=True,right_click_menu=MENU_RIGHT_CLICK)
 
     while True:
-        event, values = window.read(timeout=500)
+        event, values = window.read()
 
         if event == sg.WIN_CLOSED or event == "Exit":
             break
