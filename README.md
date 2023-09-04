@@ -41,6 +41,4 @@ Code to change:
 If you would like to use the Program as a standalone executable for Windows I would recommend to use ```auto-py-to-exe``` to make a .exe out of the Script.
 
 ## Screenshots
-![Chocolatey-GUI](https://user-images.githubusercontent.com/93329694/233053660-4e73ea42-0752-4b3b-b99b-21c8d8ad433a.png)
-
-
+![ChocoGUI](https://github.com/Kinetikal/ChocolateyGUI/assets/93329694/0c7cf9c4-62d0-45e2-903b-8acb897f9d6b)
