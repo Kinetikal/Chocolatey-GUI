@@ -1,29 +1,38 @@
 import PySimpleGUI as sg
-import subprocess, sys, webbrowser, os, time, threading
+import subprocess, sys, webbrowser, os, time
 from pathlib import Path
+import threading
 
 def main():
     predefined_choco_package = [
-    "choco install discord --version 1.0.9005 -y",
-    "choco install firefox --version 111.0.1 -y",
-    "choco install sharex --version 15.0.0 -y",
-    "choco install vlc --version 3.0.18 -y",
-    "choco install notepadplusplus --version 8.5.2 -y",
-    "choco install lghub --version 2023.2.3424 -y",
-    "choco install icue --version 4.33.138 -y",
-    "choco install vscode --version 1.77.2 -y",
-    "choco install bitwarden --version 2023.3.1 -y",
-    "choco install hwinfo --version 7.42 -y",
-    "choco install handbrake --version 1.6.1 -y",
-    "choco install treesizefree --version 4.6.3 -y",
-    "choco install obsidian --version 1.1.16 -y",
-    "choco install cheatengine --version 7.5 -y",
-    "choco install steam --version 2.10.91.91221129 -y",
-    "choco install ea-app --version 12.148.0.5405 -y",
-    "choco install epicgameslauncher --version 1.3.51.0 -y",
-    "choco install ubisoft-connect --version 140.0.0.10852 -y",
-    "choco install github-desktop --version 3.2.1 -y"
-    ]
+"choco install amd-ryzen-chipset --version 2023.8.17 -y",
+"choco install 7zip --version 23.1.0 -y",
+"choco install bitwarden --version 2023.8.4 -y",
+"choco install cheatengine --version 7.5 -y",
+"choco install icue --version 4.33.138 -y",
+"choco install discord --version 1.0.9005 -y",
+"choco install ea-app --version 13.23.0.5536 -y",
+"choco install steam --version 2.10.91.91221129 -y",
+"choco install epicgameslauncher --version 1.3.51.0 -y",
+"choco install git --version 2.42.0 -y",
+"choco install github-desktop --version 3.3.1 -y",
+"choco install handbrake --version 1.6.1 -y",
+"choco install hwinfo --version 7.62 -y",
+"choco install lghub --version 2023.7.8769 -y",
+"choco install firefox --version 117.0.1 -y",
+"choco install nilesoft-shell --version 1.8.1 -y",
+"choco install nodejs-lts --version 18.17.1 -y",
+"choco install notepadplusplus --version 8.5.7 -y",
+"choco install obsidian --version 1.4.13 -y",
+"choco install sharex --version 15.0.0 -y",
+"choco install treesize --version 9.0.2 -y",
+"choco install treesizefree --version 4.7 -y",
+"choco install ubisoft-connect --version 142.1.0.10881 -y",
+"choco install vlc --version 3.0.18 -y",
+"choco install vortex --version 1.9.4 -y",
+"choco install vscode --version 1.82.2 -y",
+"choco install goggalaxy --version 2.0.67.2 -y"
+]
 
     # Install function for Chocolatey, in case you don't have it
     def install_choco():
@@ -78,6 +87,7 @@ def main():
         try:
             with open(install_own_package) as file:
                 lines = [line.rstrip() for line in file]
+
             count = 0
             for element in lines:
                 count += 1
@@ -103,22 +113,18 @@ def main():
             
     def check_if_choco_is_installed():
         
-        try:
-            window["-STATUSBAR-"].update(value = "Checking...", text_color = "#778eca")
-            process = subprocess.run(["powershell.exe","choco --version"], stdout=subprocess.PIPE,stderr=subprocess.PIPE,text=True)
-            if process.returncode == 0:
-                window["-CHOCO_STATUSBAR-"].update("Chocolatey is installed", text_color = "#50e884")
-                #subprocess.run(["powershell.exe","choco feature enable -n=allowGlobalConfirmation"],stdout=subprocess.PIPE,stderr=subprocess.PIPE,text=True)
-                window["-OUTPUT-"].print(f"Chocolatey is installed | Version: {process.stdout}")
-                window["-STATUSBAR-"].update(value = "Waiting for an Event", text_color = "#778eca")
-            elif process.returncode == 1:
-                window["-CHOCO_STATUSBAR-"].update("Chocolatey is not installed", text_color = "#e85052")
-                window["-OUTPUT-"].print("Chocolatey is not Installed")
-                window["-OUTPUT_POWERSHELL-"].print(process.stderr)
-                window["-STATUSBAR-"].update(value = "Waiting for an Event", text_color = "#778eca")
-        except FileNotFoundError:
-            window["-OUTPUT-"].print("File not found error.")
+        window["-STATUSBAR-"].update(value = "Checking...", text_color = "#778eca")
+        process = subprocess.run(["powershell.exe","choco --version"], stdout=subprocess.PIPE,stderr=subprocess.PIPE,text=True)
+        window["-OUTPUT_POWERSHELL-"].print(process)
+        if process.returncode == 0:
+            window["-CHOCO_STATUSBAR-"].update("Chocolatey is Installed")
+            #subprocess.run(["powershell.exe","choco feature enable -n=allowGlobalConfirmation"],stdout=subprocess.PIPE,stderr=subprocess.PIPE,text=True)
+            window["-OUTPUT-"].print(f"Chocolatey is installed | Version: {process.stdout}")
             window["-STATUSBAR-"].update(value = "Waiting for an Event", text_color = "#778eca")
+            window.refresh()
+        else:
+            window["-CHOCO_STATUSBAR-"].update("Chocolatey is not Installed")
+            window["-OUTPUT-"].print(process.stderr)
         
     # Add your new theme colors and settings
     my_new_theme = {"BACKGROUND": "#1c1e23",
@@ -155,7 +161,7 @@ def main():
                       [sg.Text("List Packages:",font="Arial 16 bold"),sg.Push(),sg.Button("List Package",size=(15,1),key="-LIST_PACKAGE-")],
                       [sg.Text("Install Packages",font="Arial 16 bold"),sg.Push(),sg.Button("Install Package",size=(15,1),key="-INSTALL_PACKAGE-",disabled=True)]]
 
-    layout_addown_n_output = [[sg.Text("Add own package File:"),sg.Input(key="-CONF_INPUT-",default_text="Search for a .txt File"),sg.FileBrowse(file_types=(("Text File", "*.txt"),)),sg.Button("Read", tooltip="Adds and prints the file content into the Output.", key="-READ-"),sg.Button("Install",    tooltip="Starts intalling the Package as a PowerShell script. BE CAREFUL!", key="-INSTALL-")],
+    layout_addown_n_output = [[sg.Text("Add own package File:"),sg.Input(key="-CONF_INPUT-",default_text="Search for a .txt File"),sg.FileBrowse(file_types=(("Text File", "*.txt"),("Config File","*.config"))),sg.Button("Read", tooltip="Adds and prints the file content into the Output.", key="-READ-"),sg.Button("Install",tooltip="Starts intalling the Package as a PowerShell script. BE CAREFUL!", key="-INSTALL-")],
                               [sg.Text()],
                               [sg.Text("Program Output:",font="Arial 16 bold"),sg.Push(),sg.Text("PowerShell Output:",font="Arial 16 bold")],
                               [sg.Multiline(size=(40,10),key="-OUTPUT-",reroute_stdout=True,reroute_stderr=True),sg.Multiline(size=(45,10),key="-OUTPUT_POWERSHELL-",reroute_stdout=True,reroute_stderr=True)]]
@@ -185,7 +191,7 @@ def main():
         # Variable #
         add_own_package = values["-CONF_INPUT-"]
 
-        # Redirection URL to Chocolatey's Website #
+        # Redirection URL to Chocolatey #
         if event == "-URL_REDIRECT-":
            url = "https://chocolatey.org/"
            webbrowser.open(url)
@@ -199,8 +205,8 @@ def main():
 
         elif event == "-INSTALL_PACKAGE-":
             window.refresh()
-            #threading.Thread(target=install_predefined_choco_packages, args=(predefined_choco_package,), daemon=True).start() NOT SURE IF TO USE THREADING OR window.perform_long_operation?
-            window.perform_long_operation(lambda: install_predefined_choco_packages(predefined_choco_package),"-OUTPUT-")
+            threading.Thread(target=install_predefined_choco_packages, args=(predefined_choco_package,), daemon=True).start()
+            #window.perform_long_operation(lambda: install_predefined_choco_packages(predefined_choco_package),"-OUTPUT-")
 
         elif event == "-LIST_PACKAGE-":
             window["-OUTPUT-"].print(">>> The predefined Package contains: ")
@@ -214,8 +220,8 @@ def main():
 
         elif event == "-INSTALL-" and len(values["-CONF_INPUT-"]) > 0 and "Search for a .txt File" not in values["-CONF_INPUT-"]:
             window["-OUTPUT-"].print(">>> Installing Package from Input...")
-            #threading.Thread(target=install_user_added_package, args=(add_own_package,), daemon=True).start() NOT SURE IF TO USE THREADING OR window.perform_long_operation?
-            window.perform_long_operation(lambda: install_user_added_package(add_own_package),"-OUTPUT-")
+            threading.Thread(target=install_user_added_package, args=(add_own_package,), daemon=True).start()
+            #window.perform_long_operation(lambda: install_user_added_package(add_own_package),"-OUTPUT-")
 
         elif event == "-LOAD_BUTTON-" and values["-REPO_URL-"]:
             custom_repo_url = values["-REPO_URL-"]
@@ -227,8 +233,8 @@ def main():
             window["-OUTPUT-"].print(">>> FileNotFoundError: No file found, check Input.")
         
         elif event == "-CHOCO_CHECK_BUTTON-":
-            #threading.Thread(target=check_if_choco_is_installed, daemon=True).start() NOT SURE IF TO USE THREADING OR window.perform_long_operation?
-            window.perform_long_operation(check_if_choco_is_installed,"-OUTPUT-")
+            threading.Thread(target=check_if_choco_is_installed, daemon=True).start()
+
         elif event == "Clear Output":
             window["-OUTPUT-"].update("")
 
