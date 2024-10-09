@@ -87,11 +87,9 @@ def main():
         try:
             with open(install_own_package) as file:
                 lines = [line.rstrip() for line in file]
-
             count = 0
             for element in lines:
                 count += 1
-
                 window["-PBAR-"].update(0,max=len(lines)) # Sets the max_value of pg.Progressbar to the length of the predefined package list
                 window["-PBAR-"].update(current_count= 0 + count) # Updates the progress bar step by step with the length of the predefined package list
                 window["-STATUSBAR-"].update(value = f"Running Script: {count}/{len(lines)}", text_color = "#6fb97e")
@@ -123,7 +121,9 @@ def main():
             window["-STATUSBAR-"].update(value = "Waiting for an Event", text_color = "#778eca")
             window.refresh()
         else:
+            window["-INSTALL_CHOCOLATEY-"].update(disabled=False)
             window["-CHOCO_STATUSBAR-"].update("Chocolatey is not Installed")
+            window["-STATUSBAR-"].update(value = "Waiting for an Event", text_color = "#778eca")
             window["-OUTPUT-"].print(process.stderr)
         
     # Add your new theme colors and settings
@@ -157,7 +157,7 @@ def main():
               [sg.Text("The 'Install Package' button will be disabled, to enable it press the 'List Package' button.")],
               [sg.Text("Lastly you can go to"),sg.Text("Chocolatey Packages",font="Arial 14 underline",text_color="#6fb97e",enable_events=True, tooltip="Redirect Link to Chocolatey's Package Page.", key="-URL_REDIRECT_PACKAGES-"),sg.Text("and bundle your own Packages as a Text File.")]]
 
-    layout_buttons = [[sg.Text("Install Choco:",font="Arial 16 bold"),sg.Push(),sg.Button("Install Chocolatey",size=(15,1),key="-INSTALL_CHOCOLATEY-")],
+    layout_buttons = [[sg.Text("Install Choco:",font="Arial 16 bold"),sg.Push(),sg.Button("Install Chocolatey",size=(15,1),disabled=True,key="-INSTALL_CHOCOLATEY-")],
                       [sg.Text("List Packages:",font="Arial 16 bold"),sg.Push(),sg.Button("List Package",size=(15,1),key="-LIST_PACKAGE-")],
                       [sg.Text("Install Packages",font="Arial 16 bold"),sg.Push(),sg.Button("Install Package",size=(15,1),key="-INSTALL_PACKAGE-",disabled=True)]]
 
